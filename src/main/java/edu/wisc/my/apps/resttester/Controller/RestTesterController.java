@@ -2,7 +2,6 @@ package edu.wisc.my.apps.resttester.Controller;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.tomcat.util.http.fileupload.IOUtils;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,9 +11,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.io.StringWriter;
 
@@ -32,21 +28,27 @@ public class RestTesterController{
     protected final Logger logger = LoggerFactory.getLogger(getClass());
     private Environment env;
     private ResourceLoader resourceLoader;
+    private String responseType = null;
 
     @Autowired
     public void setEnv(Environment env) { this.env = env; }
 
+
+    @RequestMapping(value="/xml")
+    public @ResponseBody void getXml(HttpServletRequest request, HttpServletResponse response){
+        responseType = "application/xml";
+        getResponse(request, response);
+    }
+
+    
+
     @RequestMapping(value="/")
-    public @ResponseBody void getJson(HttpServletRequest request, HttpServletResponse response){
-    StringBuilder result = new StringBuilder("");
+    public @ResponseBody void getResponse(HttpServletRequest request, HttpServletResponse response){
     try {
           String linkLocation = env.getProperty("link");
           logger.error(linkLocation);
-
-	//Get file from resources folder
-	ClassLoader classLoader = this.getClass().getClassLoader();
-    
-    File filio = ResourceUtils.getFile("classpath:config/jsonToReturn.json");
+  
+    File filio = ResourceUtils.getFile("classpath:config/xmlToReturn.xml");
     InputStream is = new FileInputStream(filio);
     StringWriter writer = new StringWriter();
     BufferedInputStream bis = new BufferedInputStream(is);
@@ -58,12 +60,15 @@ while(i != -1) {
 }
 // StandardCharsets.UTF_8.name() > JDK 7
 
-    JSONObject responseObj= new JSONObject(buf.toString());
+    String responseObj= buf.toString();
     
     logger.error("Filio " + filio.exists());
  
-          response.getWriter().write(responseObj.toString());
-          response.setContentType("application/json");
+          response.getWriter().write(responseObj);
+          if(responseType == null) { 
+              responseType = "application/json";
+          }
+          response.setContentType(responseType);
           response.setStatus(HttpServletResponse.SC_OK);
         } catch (Exception e) {
             logger.error("Issues happened while trying to write Status", e);
