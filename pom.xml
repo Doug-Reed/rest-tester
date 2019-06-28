@@ -3,12 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>edu.wisc.my.apps</groupId>
-	<artifactId>rest-tester</artifactId>
+	<groupId>edu.my.apps</groupId>
+	<artifactId>game</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>rest-tester</name>
+	<name>game</name>
 	<description>Provides a json object from a test endpoint</description>
 
 	<parent>
